@@ -1,54 +1,106 @@
+import { useState } from "react";
+import { StyleSheet, View, FlatList,Button } from "react-native";
+import GoalItem from "./components/GoalItem";
+import GoalInput from "./components/GoalInput";
+import {StatusBar} from 'expo-status-bar';
 
-import {StyleSheet, Text, View, Button, TextInput } from 'react-native';
-// components exposed by react native
 
-// below is called functional components.
-// Text and View are built in components
-// view is to hold other components, instead of content
+
 export default function App() {
+
+
+
+  const [modalIsVisible, setmodalIsVisible]=useState(false);
+  const [goals, setGoals] = useState([]);
+
+
+
+  function startAddGoalHandler(){
+    setmodalIsVisible(true);
+  }
+
+  function endAddGoalHandler(){
+    setmodalIsVisible(false);
+  }
+
+
+  function addGoalHandler(enteredGoalText) {
+    setGoals((currentGoals) => [...currentGoals, {text:enteredGoalText, id:Math.random().toString()}]);
+    endAddGoalHandler();
+
+  }
+function deleteGoalHandler(id){
+  setGoals((currentGoals)=>{
+    return currentGoals.filter((goal)=>goal.id!==id);
+  });
+ 
+}
+
+
   return (
-    <>
-   <View style={styles.appContainer}>
-<View style={ styles.inputContainer}>
-  <TextInput placeholder="hello sunshine" />
-  <Button title='lalalalalal'/>
-</View>
-
-<View></View>
-
-
-   </View>
+   <>
+   <StatusBar style="light" />
+      <View style={styles.appContainer}>
+      <Button title="ADD NEW GOAL" color='blue' onPress={startAddGoalHandler}
+      />
 
      
-    </>
+
+    <GoalInput visible={modalIsVisible}
+                addGoalHandler={addGoalHandler}  
+                endAddGoalHandler={endAddGoalHandler} 
+            />
+
+      <View style={styles.goalsContainer}>
+        <FlatList 
+         data={goals}
+         keyExtractor={(item,index)=>{
+              return item.id;
+            }}
+         renderItem={(goalData)=>{
+          return (<GoalItem 
+          text={goalData.item.text} 
+          id={goalData.item.id}
+          deleteGoalHandler={deleteGoalHandler}
+          />
+          );
+          }}
+           
+          />
+          </View>
+      </View>
+      </>
+    
   );
 }
 
 // style prop is supported on view and text
 // StyleSheet is an object;  .create is a built in method:
 const styles = StyleSheet.create({
-  appContainer:{
-    padding: 100
+  appContainer: {
+    paddingHorizontal: 40,
+    flex: 1,
+    padding: 100,
+    borderColor: "red",
+    borderWidth: 2,
+    paddingTop: 50,
   },
 
-  inputContainer:{
-    flexDirection:"row",
-    justifyContent:"space-evenly"
+  goalsContainer: {
+    flex: 4,
   },
-
+ 
 
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  paragraph:{
-  color:'red'
-  }
+  paragraph: {
+    color: "red",
+  },
 });
-
-
 
 // <View style={styles.container}>
 
